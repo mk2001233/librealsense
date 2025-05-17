@@ -6,6 +6,7 @@ Copyright(c) 2017 Intel Corporation. All Rights Reserved. */
 #include <librealsense2/hpp/rs_device.hpp>
 #include <librealsense2/hpp/rs_record_playback.hpp> // for downcasts
 #include <../common/metadata-helper.h>
+#include <iostream>
 
 void init_device(py::module &m) {
     /** rs_device.hpp **/
@@ -99,7 +100,7 @@ void init_device(py::module &m) {
     auto_calibrated_device.def(py::init<rs2::device>(), "device"_a)
         .def("write_calibration", &rs2::auto_calibrated_device::write_calibration, "Write calibration that was set by set_calibration_table to device's EEPROM.", py::call_guard<py::gil_scoped_release>())
         .def("run_on_chip_calibration", [](rs2::auto_calibrated_device& self, std::string json_content, int timeout_ms)
-        { 
+        {
             float health;
             return py::make_tuple(self.run_on_chip_calibration(json_content, &health, timeout_ms), health);
         },"This will improve the depth noise (plane fit RMS). This call is executed on the caller's thread.","json_content"_a, "timeout_ms"_a, py::call_guard<py::gil_scoped_release>())
@@ -180,7 +181,7 @@ void init_device(py::module &m) {
         .def( "register_calibration_change_callback",
             []( rs2::device_calibration& self, std::function<void( rs2_calibration_status )> callback )
             {
-                self.register_calibration_change_callback( 
+                self.register_calibration_change_callback(
                     [callback]( rs2_calibration_status status )
                     {
                         try
